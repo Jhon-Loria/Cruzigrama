@@ -13,83 +13,178 @@ class CategorySelectionWidget extends ConsumerWidget {
     final manualMode = ref.watch(manualModeProvider);
     final shouldUseOnline = ref.watch(shouldUseOnlineModeProvider);
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Seleccionar Modo',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF001A3A),
+                const Color(0xFF002A4A),
+                const Color(0xFF001A3A),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFF00BFFF),
+              width: 3,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00BFFF).withOpacity(0.5),
+                blurRadius: 30,
+                spreadRadius: 5,
               ),
-            ),
-            const SizedBox(height: 16),
-            _ModeOption(
-              title: 'Automático',
-              description: 'Detecta automáticamente según conexión',
-              icon: Icons.settings,
-              isSelected: manualMode == null,
-              onTap: () {
-                ref.read(manualModeProvider.notifier).useAutomatic();
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 12),
-            _ModeOption(
-              title: 'Modo Online',
-              description: 'Forzar uso de Supabase (requiere internet)',
-              icon: Icons.cloud,
-              isSelected: manualMode == true,
-              onTap: () {
-                ref.read(manualModeProvider.notifier).forceOnline();
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 12),
-            _ModeOption(
-              title: 'Modo Offline',
-              description: 'Usar solo datos locales',
-              icon: Icons.cloud_off,
-              isSelected: manualMode == false,
-              onTap: () {
-                ref.read(manualModeProvider.notifier).forceOffline();
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 16),
-            shouldUseOnline.when(
-              data: (online) => Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: online ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      online ? Icons.cloud : Icons.cloud_off,
-                      color: online ? Colors.green : Colors.orange,
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Título con estilo retro
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Color(0xFF00BFFF), Color(0xFF0099FF), Color(0xFF00D9FF)],
+                  ).createShader(bounds),
+                  child: const Text(
+                    'SELECCIONAR MODO',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Colors.white,
+                      fontFamily: 'Courier',
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      online ? 'Modo Online Activo' : 'Modo Offline Activo',
-                      style: TextStyle(
-                        color: online ? Colors.green : Colors.orange,
-                        fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Opciones de modo
+                _ModeOption(
+                  title: 'AUTOMÁTICO',
+                  description: 'Detecta automáticamente según conexión',
+                  icon: Icons.settings,
+                  isSelected: manualMode == null,
+                  onTap: () {
+                    ref.read(manualModeProvider.notifier).useAutomatic();
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(height: 16),
+                _ModeOption(
+                  title: 'MODO ONLINE',
+                  description: 'Forzar uso de Supabase (requiere internet)',
+                  icon: Icons.cloud,
+                  isSelected: manualMode == true,
+                  onTap: () {
+                    ref.read(manualModeProvider.notifier).forceOnline();
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(height: 16),
+                _ModeOption(
+                  title: 'MODO OFFLINE',
+                  description: 'Usar solo datos locales',
+                  icon: Icons.cloud_off,
+                  isSelected: manualMode == false,
+                  onTap: () {
+                    ref.read(manualModeProvider.notifier).forceOffline();
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(height: 24),
+                // Indicador de estado actual
+                shouldUseOnline.when(
+                  data: (online) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: online
+                            ? [const Color(0xFF00D9FF), const Color(0xFF00BFFF)]
+                            : [const Color(0xFF0099FF), const Color(0xFF0066FF)],
                       ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF00BFFF),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (online ? const Color(0xFF00D9FF) : const Color(0xFF0099FF))
+                              .withOpacity(0.6),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
-                  ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            online ? Icons.cloud : Icons.cloud_off,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.black, Colors.black],
+                          ).createShader(bounds),
+                          child: Text(
+                            online ? 'MODO ONLINE ACTIVO' : 'MODO OFFLINE ACTIVO',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 1.5,
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  loading: () => Container(
+                    padding: const EdgeInsets.all(16),
+                    child: const CircularProgressIndicator(
+                      color: Color(0xFF00BFFF),
+                    ),
+                  ),
+                  error: (_, __) => const SizedBox(),
                 ),
-              ),
-              loading: () => const SizedBox(),
-              error: (_, __) => const SizedBox(),
+                const SizedBox(height: 16),
+                // Botón de cerrar
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF00BFFF),
+                  ),
+                  child: const Text(
+                    'CERRAR',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      fontFamily: 'Courier',
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -325,7 +420,7 @@ class CategorySelectionWidget extends ConsumerWidget {
   }
 }
 
-/// Widget para opción de modo
+/// Widget para opción de modo con estilo retro azul neón
 class _ModeOption extends StatelessWidget {
   final String title;
   final String description;
@@ -343,56 +438,130 @@ class _ModeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: isSelected
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF0099FF),
+                      const Color(0xFF00BFFF),
+                      const Color(0xFF0099FF),
+                    ],
+                  )
+                : LinearGradient(
+                    colors: [
+                      const Color(0xFF001A3A).withOpacity(0.5),
+                      const Color(0xFF002A4A).withOpacity(0.5),
+                    ],
+                  ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected ? const Color(0xFF00D9FF) : const Color(0xFF00BFFF),
+              width: isSelected ? 3 : 2,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFF00BFFF).withOpacity(0.6),
+                      blurRadius: 15,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : [],
           ),
-          borderRadius: BorderRadius.circular(8),
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Theme.of(context).colorScheme.primary : Colors.black,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? const LinearGradient(
+                          colors: [Color(0xFF00D9FF), Color(0xFF00BFFF)],
+                        )
+                      : LinearGradient(
+                          colors: [
+                            const Color(0xFF00BFFF).withOpacity(0.3),
+                            const Color(0xFF0099FF).withOpacity(0.3),
+                          ],
+                        ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? const Color(0xFF00D9FF) : const Color(0xFF00BFFF),
+                    width: 2,
+                  ),
+                ),
+                child: Icon(
+                  icon,
+                  color: isSelected ? Colors.black : const Color(0xFF00BFFF),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: isSelected
+                            ? [Colors.black, Colors.black]
+                            : [const Color(0xFF00BFFF), const Color(0xFF00D9FF)],
+                      ).createShader(bounds),
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: isSelected ? Colors.white : Colors.white,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isSelected
+                            ? Colors.black.withOpacity(0.8)
+                            : const Color(0xFF00CED1),
+                        letterSpacing: 0.5,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF00D9FF), Color(0xFF00BFFF)],
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.black,
+                    size: 20,
                   ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-          ],
+                ),
+            ],
+          ),
         ),
       ),
     );
